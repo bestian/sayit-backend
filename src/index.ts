@@ -186,6 +186,50 @@ export default {
 			});
 		}
 
+		// 處理 /api/speech_index.json 路由
+		if (pathname === '/api/speech_index.json') {
+			if (request.method !== 'GET') {
+				return new Response('Method not allowed', {
+					status: 405,
+					headers: corsHeaders,
+				});
+			}
+
+			try {
+				// 從 D1 資料庫查詢所有 filename
+				const result = await env.DB.prepare('SELECT filename FROM speech_index ORDER BY id ASC').all();
+
+				if (!result.success) {
+					return new Response(JSON.stringify({ error: 'Database query failed' }), {
+						status: 500,
+						headers: {
+							...corsHeaders,
+							'Content-Type': 'application/json',
+						},
+					});
+				}
+
+				// 提取所有 filename 成為陣列
+				const filenames = result.results.map((row: any) => row.filename);
+
+				return new Response(JSON.stringify(filenames), {
+					status: 200,
+					headers: {
+						...corsHeaders,
+						'Content-Type': 'application/json',
+					},
+				});
+			} catch (error) {
+				return new Response(JSON.stringify({ error: 'Internal server error' }), {
+					status: 500,
+					headers: {
+						...corsHeaders,
+						'Content-Type': 'application/json',
+					},
+				});
+			}
+		}
+
 		// 處理 /api/an/{...}.an 路由
 		const speechObjectKey = getSpeechObjectKey(pathname);
 		if (speechObjectKey) {

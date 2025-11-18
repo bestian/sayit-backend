@@ -212,7 +212,7 @@ export default {
 				// 提取所有 filename 成為陣列
 				const filenames = result.results.map((row: any) => row.filename);
 
-				return new Response(JSON.stringify(filenames), {
+				return new Response(JSON.stringify(filenames, null, 2), {
 					status: 200,
 					headers: {
 						...corsHeaders,

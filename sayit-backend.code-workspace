@@ -1,0 +1,15 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../sayit"
+		}
+	],
+	"settings": {
+		"files.associations": {
+			"wrangler.json": "jsonc"
+		}
+	}
+}

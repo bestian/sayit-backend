@@ -30,8 +30,8 @@
 	],
 	"r2_buckets": [
 		{
+			"binding": "SPEECH_AN",
 			"bucket_name": "sayit-speech-an",
-			"binding": "sayit_speech_an",
 			"preview_bucket_name": "sayit-speech-an-preview"
 		}
 	],

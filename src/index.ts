@@ -15,6 +15,7 @@ interface Env {
 	DB: D1Database;
 	AUDREYT_TRANSCRIPT_TOKEN: string;
 	BESTIAN_TRANSCRIPT_TOKEN: string;
+	SPEECH_AN: R2Bucket;
 }
 
 // 允許的來源白名單
@@ -29,6 +30,9 @@ const ALLOWED_GITHUB_REPOS = {
 	'audreyt/transcript': 'AUDREYT_TRANSCRIPT_TOKEN',
 	'bestian/transcript': 'BESTIAN_TRANSCRIPT_TOKEN',
 } as const;
+
+const SPEECH_FILE_EXTENSION = '.an';
+const SPEECH_API_PREFIX = '/api/an/';
 
 type AllowedRepo = keyof typeof ALLOWED_GITHUB_REPOS;
 type AllowedRepoSecret = typeof ALLOWED_GITHUB_REPOS[AllowedRepo];
@@ -97,6 +101,49 @@ function getCorsHeaders(origin: string | null, isGitHubActionRequest: boolean = 
 	};
 }
 
+function getSpeechObjectKey(pathname: string): string | null {
+	if (!pathname || pathname === '/') {
+		return null;
+	}
+
+	// 只處理 /api/an/ 開頭的路徑
+	if (!pathname.startsWith(SPEECH_API_PREFIX)) {
+		return null;
+	}
+
+	try {
+		const decoded = decodeURIComponent(pathname);
+		if (!decoded.endsWith(SPEECH_FILE_EXTENSION)) {
+			return null;
+		}
+
+		// 移除 /api/an/ 前綴，取得 R2 物件鍵
+		const key = decoded.slice(SPEECH_API_PREFIX.length);
+		return key.length > 0 ? key : null;
+	} catch {
+		return null;
+	}
+}
+
+function buildSpeechHeaders(baseHeaders: Record<string, string>, object: R2Object | R2ObjectBody) {
+	const headers = new Headers(baseHeaders);
+	const fallbackContentType = 'text/plain; charset=utf-8';
+	const fallbackCacheControl = 'public, max-age=3600';
+
+	headers.set('Cache-Control', object.httpMetadata?.cacheControl ?? fallbackCacheControl);
+	headers.set('Content-Type', object.httpMetadata?.contentType ?? fallbackContentType);
+
+	if (typeof object.size === 'number') {
+		headers.set('Content-Length', object.size.toString());
+	}
+
+	if (object.httpEtag) {
+		headers.set('ETag', object.httpEtag);
+	}
+
+	return headers;
+}
+
 export default {
 	async fetch(request, env, ctx): Promise<Response> {
 		const origin = request.headers.get('Origin');
@@ -129,10 +176,50 @@ export default {
 			});
 		}
 
-		const pathname = new URL(request.url).pathname;
+		const { pathname } = new URL(request.url);
 		const corsHeaders = getCorsHeaders(origin, isGitHubActionRequest);
 
-		return new Response('Hello World!', {
+		// 處理根路由
+		if (pathname === '/') {
+			return new Response('Hello World!', {
+				headers: corsHeaders,
+			});
+		}
+
+		// 處理 /api/an/{...}.an 路由
+		const speechObjectKey = getSpeechObjectKey(pathname);
+		if (speechObjectKey) {
+			if (request.method === 'HEAD') {
+				const headObject = await env.SPEECH_AN.head(speechObjectKey);
+				if (!headObject) {
+					return new Response('Speech not found', {
+						status: 404,
+						headers: corsHeaders,
+					});
+				}
+
+				return new Response(null, {
+					status: 200,
+					headers: buildSpeechHeaders(corsHeaders, headObject),
+				});
+			}
+
+			const speechObject = await env.SPEECH_AN.get(speechObjectKey);
+			if (!speechObject) {
+				return new Response('Speech not found', {
+					status: 404,
+					headers: corsHeaders,
+				});
+			}
+
+			return new Response(speechObject.body, {
+				status: 200,
+				headers: buildSpeechHeaders(corsHeaders, speechObject),
+			});
+		}
+
+		return new Response('Not Found', {
+			status: 404,
 			headers: corsHeaders,
 		});
 	},

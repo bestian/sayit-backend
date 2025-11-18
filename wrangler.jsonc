@@ -28,6 +28,13 @@
 			"database_id": "309347b7-de29-4d0f-b755-55d2638defc9"
 		}
 	],
+	"r2_buckets": [
+		{
+			"bucket_name": "sayit-speech-an",
+			"binding": "sayit_speech_an",
+			"preview_bucket_name": "sayit-speech-an-preview"
+		}
+	],
 	/**
 	 * Environment Variables
 	 * https://developers.cloudflare.com/workers/wrangler/configuration/#environment-variables

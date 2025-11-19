@@ -278,6 +278,81 @@ export default {
 			}
 		}
 
+		// 處理 /api/speaker_detail/{id} 路由
+		const speakersIdMatch = pathname.match(/^\/api\/speaker_detail\/(\d+)$/);
+		if (speakersIdMatch) {
+			if (request.method !== 'GET') {
+				return new Response('Method not allowed', {
+					status: 405,
+					headers: corsHeaders,
+				});
+			}
+
+			try {
+				const speakerId = parseInt(speakersIdMatch[1], 10);
+
+				// 從 D1 資料庫查詢指定 id 的講者
+				const result = await env.DB.prepare('SELECT * FROM speakers WHERE id = ?').bind(speakerId).first();
+
+				if (!result) {
+					return new Response(JSON.stringify({ error: 'Speaker not found' }), {
+						status: 404,
+						headers: {
+							...corsHeaders,
+							'Content-Type': 'application/json',
+						},
+					});
+				}
+
+				// 解析 JSON 字串欄位
+				const speaker: any = {
+					id: result.id,
+					name: result.name,
+					photoURL: result.photoURL,
+					appearances_count: result.appearances_count,
+					speeches_count: result.speeches_count,
+				};
+
+				// 解析 speeches JSON 字串
+				if (result.speeches) {
+					try {
+						speaker.speeches = JSON.parse(result.speeches as string);
+					} catch (e) {
+						speaker.speeches = [];
+					}
+				} else {
+					speaker.speeches = [];
+				}
+
+				// 解析 longest_speech JSON 字串
+				if (result.longest_speech) {
+					try {
+						speaker.longest_speech = JSON.parse(result.longest_speech as string);
+					} catch (e) {
+						speaker.longest_speech = null;
+					}
+				} else {
+					speaker.longest_speech = null;
+				}
+
+				return new Response(JSON.stringify(speaker, null, 2), {
+					status: 200,
+					headers: {
+						...corsHeaders,
+						'Content-Type': 'application/json',
+					},
+				});
+			} catch (error) {
+				return new Response(JSON.stringify({ error: 'Internal server error' }), {
+					status: 500,
+					headers: {
+						...corsHeaders,
+						'Content-Type': 'application/json',
+					},
+				});
+			}
+		}
+
 		// 處理 /api/an/{...}.an 路由
 		const speechObjectKey = getSpeechObjectKey(pathname);
 		if (speechObjectKey) {

@@ -240,8 +240,8 @@ export default {
 			}
 
 			try {
-				// 從 D1 資料庫查詢講者列表，只選擇 name 和 photoURL
-				const result = await env.DB.prepare('SELECT id,name, photoURL FROM speakers ORDER BY id ASC').all();
+				// 從 D1 資料庫查詢講者列表，只選擇 id, route_pathname, name, photoURL
+				const result = await env.DB.prepare('SELECT id, route_pathname, name, photoURL FROM speakers ORDER BY id ASC').all();
 
 				if (!result.success) {
 					return new Response(JSON.stringify({ error: 'Database query failed' }), {
@@ -256,6 +256,7 @@ export default {
 				// 轉換為所需的格式：Array of Objects
 				const speakers = result.results.map((row: any) => ({
 					id: row.id,
+					route_pathname: row.route_pathname,
 					name: row.name,
 					photoURL: row.photoURL,
 				}));
@@ -278,9 +279,9 @@ export default {
 			}
 		}
 
-		// 處理 /api/speaker_detail/{id} 路由
-		const speakersIdMatch = pathname.match(/^\/api\/speaker_detail\/(\d+)$/);
-		if (speakersIdMatch) {
+		// 處理 /api/speaker_detail/{route_pathname} 路由
+		const speakersRoutePathnameMatch = pathname.match(/^\/api\/speaker_detail\/([^\/]+)$/);
+		if (speakersRoutePathnameMatch) {
 			if (request.method !== 'GET') {
 				return new Response('Method not allowed', {
 					status: 405,
@@ -289,10 +290,10 @@ export default {
 			}
 
 			try {
-				const speakerId = parseInt(speakersIdMatch[1], 10);
+				const speakerRoutePathname = speakersRoutePathnameMatch[1];
 
 				// 從 D1 資料庫查詢指定 id 的講者
-				const result = await env.DB.prepare('SELECT * FROM speakers WHERE id = ?').bind(speakerId).first();
+				const result = await env.DB.prepare('SELECT * FROM speakers WHERE route_pathname = ?').bind(speakerRoutePathname).first();
 
 				if (!result) {
 					return new Response(JSON.stringify({ error: 'Speaker not found' }), {
@@ -307,6 +308,7 @@ export default {
 				// 解析 JSON 字串欄位
 				const speaker: any = {
 					id: result.id,
+					route_pathname: result.route_pathname,
 					name: result.name,
 					photoURL: result.photoURL,
 					appearances_count: result.appearances_count,

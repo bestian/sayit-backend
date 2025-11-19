@@ -230,6 +230,54 @@ export default {
 			}
 		}
 
+		// 處理 /api/speakers_index.json 路由
+		if (pathname === '/api/speakers_index.json') {
+			if (request.method !== 'GET') {
+				return new Response('Method not allowed', {
+					status: 405,
+					headers: corsHeaders,
+				});
+			}
+
+			try {
+				// 從 D1 資料庫查詢講者列表，只選擇 name 和 photoURL
+				const result = await env.DB.prepare('SELECT id,name, photoURL FROM speakers ORDER BY id ASC').all();
+
+				if (!result.success) {
+					return new Response(JSON.stringify({ error: 'Database query failed' }), {
+						status: 500,
+						headers: {
+							...corsHeaders,
+							'Content-Type': 'application/json',
+						},
+					});
+				}
+
+				// 轉換為所需的格式：Array of Objects
+				const speakers = result.results.map((row: any) => ({
+					id: row.id,
+					name: row.name,
+					photoURL: row.photoURL,
+				}));
+
+				return new Response(JSON.stringify(speakers, null, 2), {
+					status: 200,
+					headers: {
+						...corsHeaders,
+						'Content-Type': 'application/json',
+					},
+				});
+			} catch (error) {
+				return new Response(JSON.stringify({ error: 'Internal server error' }), {
+					status: 500,
+					headers: {
+						...corsHeaders,
+						'Content-Type': 'application/json',
+					},
+				});
+			}
+		}
+
 		// 處理 /api/an/{...}.an 路由
 		const speechObjectKey = getSpeechObjectKey(pathname);
 		if (speechObjectKey) {

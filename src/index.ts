@@ -292,7 +292,7 @@ export default {
 			try {
 				const speakerRoutePathname = speakersRoutePathnameMatch[1];
 
-				// 從 D1 資料庫查詢指定 id 的講者
+				// 從 D1 資料庫查詢指定 route_pathname 的講者
 				const result = await env.DB.prepare('SELECT * FROM speakers WHERE route_pathname = ?').bind(speakerRoutePathname).first();
 
 				if (!result) {

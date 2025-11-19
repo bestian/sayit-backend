@@ -1,8 +1,8 @@
 DROP TABLE IF EXISTS speakers;
 
 CREATE TABLE IF NOT EXISTS speakers (
-    id INTEGER PRIMARY KEY NOT NULL,
-    route_pathname TEXT NOT NULL,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    route_pathname TEXT NOT NULL UNIQUE,
     name TEXT NOT NULL,
     photoURL TEXT,
 	appearances_count INTEGER DEFAULT 0,

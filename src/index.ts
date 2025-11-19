@@ -279,8 +279,8 @@ export default {
 			}
 		}
 
-		// 處理 /api/speaker_detail/{route_pathname} 路由
-		const speakersRoutePathnameMatch = pathname.match(/^\/api\/speaker_detail\/([^\/]+)$/);
+		// 處理 /api/speaker_detail/{route_pathname}.json 路由
+		const speakersRoutePathnameMatch = pathname.match(/^\/api\/speaker_detail\/([^\/]+)\.json$/);
 		if (speakersRoutePathnameMatch) {
 			if (request.method !== 'GET') {
 				return new Response('Method not allowed', {

@@ -355,6 +355,68 @@ export default {
 			}
 		}
 
+		// 處理 /api/speech/{filename} 路由
+		const speechFilenameMatch = pathname.match(/^\/api\/speech\/(.+)$/);
+		if (speechFilenameMatch) {
+			if (request.method !== 'GET') {
+				return new Response('Method not allowed', {
+					status: 405,
+					headers: corsHeaders,
+				});
+			}
+
+			try {
+				// 解碼 URL 編碼的 filename
+				const encodedFilename = speechFilenameMatch[1];
+				const filename = decodeURIComponent(encodedFilename);
+
+				// 從 D1 資料庫查詢所有符合 filename 的演講內容
+				// 使用 section_id 排序以保持原始順序
+				// 注意：雖然 filename 沒有索引，但對於單一查詢，SQLite 仍能有效處理
+				const result = await env.DB.prepare(
+					'SELECT filename, section_id, section_speaker, section_content FROM speech_content WHERE filename = ? ORDER BY section_id ASC'
+				)
+					.bind(filename)
+					.all();
+
+				if (!result.success) {
+					return new Response(JSON.stringify({ error: 'Database query failed' }), {
+						status: 500,
+						headers: {
+							...corsHeaders,
+							'Content-Type': 'application/json',
+						},
+					});
+				}
+
+				// 轉換為 Array of Objects 格式
+				const speechContent = result.results.map((row: any) => ({
+					filename: row.filename,
+					section_id: row.section_id,
+					section_speaker: row.section_speaker,
+					section_content: row.section_content,
+				}));
+
+				// 如果沒有找到任何資料，返回空陣列而不是 404
+				// 這樣前端可以區分「查詢成功但無資料」和「查詢失敗」
+				return new Response(JSON.stringify(speechContent, null, 2), {
+					status: 200,
+					headers: {
+						...corsHeaders,
+						'Content-Type': 'application/json',
+					},
+				});
+			} catch (error) {
+				return new Response(JSON.stringify({ error: 'Internal server error' }), {
+					status: 500,
+					headers: {
+						...corsHeaders,
+						'Content-Type': 'application/json',
+					},
+				});
+			}
+		}
+
 		// 處理 /api/an/{...}.an 路由
 		const speechObjectKey = getSpeechObjectKey(pathname);
 		if (speechObjectKey) {

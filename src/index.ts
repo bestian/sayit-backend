@@ -417,6 +417,75 @@ export default {
 			}
 		}
 
+		// 處理 /api/section/{section_id} 路由
+		const sectionIdMatch = pathname.match(/^\/api\/section\/(\d+)$/);
+		if (sectionIdMatch) {
+			if (request.method !== 'GET') {
+				return new Response('Method not allowed', {
+					status: 405,
+					headers: corsHeaders,
+				});
+			}
+
+			try {
+				const sectionId = parseInt(sectionIdMatch[1], 10);
+
+				// 從 D1 資料庫查詢所有符合 section_id 的資料
+				// section_id 是 PRIMARY KEY，理論上只會有一筆資料
+				const result = await env.DB.prepare(
+					'SELECT filename, section_id, section_speaker, section_content FROM speech_content WHERE section_id = ?'
+				)
+					.bind(sectionId)
+					.all();
+
+				if (!result.success) {
+					return new Response(JSON.stringify({ error: 'Database query failed' }), {
+						status: 500,
+						headers: {
+							...corsHeaders,
+							'Content-Type': 'application/json',
+						},
+					});
+				}
+
+				// 如果沒有找到任何資料，返回 404
+				if (result.results.length === 0) {
+					return new Response(JSON.stringify({ error: 'Section not found' }), {
+						status: 404,
+						headers: {
+							...corsHeaders,
+							'Content-Type': 'application/json',
+						},
+					});
+				}
+
+				// 返回第一筆資料作為單一 Object（因為 section_id 是 PRIMARY KEY，應該只有一筆）
+				const section = result.results[0] as any;
+				const sectionData = {
+					filename: section.filename,
+					section_id: section.section_id,
+					section_speaker: section.section_speaker,
+					section_content: section.section_content,
+				};
+
+				return new Response(JSON.stringify(sectionData, null, 2), {
+					status: 200,
+					headers: {
+						...corsHeaders,
+						'Content-Type': 'application/json',
+					},
+				});
+			} catch (error) {
+				return new Response(JSON.stringify({ error: 'Internal server error' }), {
+					status: 500,
+					headers: {
+						...corsHeaders,
+						'Content-Type': 'application/json',
+					},
+				});
+			}
+		}
+
 		// 處理 /api/an/{...}.an 路由
 		const speechObjectKey = getSpeechObjectKey(pathname);
 		if (speechObjectKey) {

@@ -92,6 +92,12 @@ $listItems.each((index, liElement) => {
   speechData.push(speechItem);
 });
 
+// 加入 previous_section_id 和 next_section_id
+speechData.forEach((item, index) => {
+  item.previous_section_id = index > 0 ? speechData[index - 1].section_id : null;
+  item.next_section_id = index < speechData.length - 1 ? speechData[index + 1].section_id : null;
+});
+
 console.log(`成功解析 ${speechData.length} 筆資料`);
 
 // 確保輸出目錄存在
@@ -126,11 +132,13 @@ speechData.forEach((item) => {
   const escapedContent = (item.section_content || '').replace(/'/g, "''");
 
   const sectionId = item.section_id !== null ? item.section_id : 'NULL';
+  const previousSectionId = item.previous_section_id !== null ? item.previous_section_id : 'NULL';
+  const nextSectionId = item.next_section_id !== null ? item.next_section_id : 'NULL';
   const speakerValue = item.section_speaker ? `'${escapedSpeaker}'` : 'NULL';
   const contentValue = item.section_content ? `'${escapedContent}'` : 'NULL';
 
   sqlStatements.push(
-    `INSERT OR IGNORE INTO speech_content (filename, section_id, section_speaker, section_content) VALUES ('${escapedFilename}', ${sectionId}, ${speakerValue}, ${contentValue});`
+    `INSERT OR IGNORE INTO speech_content (filename, section_id, previous_section_id, next_section_id, section_speaker, section_content) VALUES ('${escapedFilename}', ${sectionId}, ${previousSectionId}, ${nextSectionId}, ${speakerValue}, ${contentValue});`
   );
 });
 

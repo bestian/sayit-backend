@@ -433,7 +433,7 @@ export default {
 				// 從 D1 資料庫查詢所有符合 section_id 的資料
 				// section_id 是 PRIMARY KEY，理論上只會有一筆資料
 				const result = await env.DB.prepare(
-					'SELECT filename, section_id, section_speaker, section_content FROM speech_content WHERE section_id = ?'
+					'SELECT filename, section_id, section_speaker, section_content, previous_section_id, next_section_id FROM speech_content WHERE section_id = ?'
 				)
 					.bind(sectionId)
 					.all();
@@ -466,6 +466,8 @@ export default {
 					section_id: section.section_id,
 					section_speaker: section.section_speaker,
 					section_content: section.section_content,
+					previous_section_id: section.previous_section_id,
+					next_section_id: section.next_section_id,
 				};
 
 				return new Response(JSON.stringify(sectionData, null, 2), {

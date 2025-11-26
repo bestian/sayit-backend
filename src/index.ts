@@ -373,11 +373,10 @@ export default {
 				const encodedFilename = speechFilenameMatch[1];
 				const filename = decodeURIComponent(encodedFilename);
 
-				// 從 D1 資料庫查詢所有符合 filename 的演講內容
+				// 從 sections 視圖查詢所有符合 filename 的演講內容
 				// 使用 section_id 排序以保持原始順序
-				// 注意：雖然 filename 沒有索引，但對於單一查詢，SQLite 仍能有效處理
 				const result = await env.DB.prepare(
-					'SELECT filename, section_id, section_speaker, section_content FROM speech_content WHERE filename = ? ORDER BY section_id ASC'
+					'SELECT filename, section_id, previous_section_id, next_section_id, section_speaker, section_content, display_name, photoURL, name FROM sections WHERE filename = ? ORDER BY section_id ASC'
 				)
 					.bind(filename)
 					.all();
@@ -396,8 +395,13 @@ export default {
 				const speechContent = result.results.map((row: any) => ({
 					filename: row.filename,
 					section_id: row.section_id,
+					previous_section_id: row.previous_section_id,
+					next_section_id: row.next_section_id,
 					section_speaker: row.section_speaker,
 					section_content: row.section_content,
+					display_name: row.display_name,
+					photoURL: row.photoURL,
+					name: row.name,
 				}));
 
 				// 如果沒有找到任何資料，返回空陣列而不是 404

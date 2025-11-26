@@ -21,8 +21,8 @@ interface Env {
 // 允許的來源白名單
 const ALLOWED_ORIGINS = [
 	'http://localhost:5173', // 本地開發環境
-	'https://sayit-f5d.pages.dev/',
-	'https://sayit.archive.tw/',
+	'https://sayit-f5d.pages.dev', // 測試環境
+	'https://sayit.archive.tw', // 正式環境
 	// 可以根據需要添加更多允許的來源
 ];
 

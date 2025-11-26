@@ -138,7 +138,7 @@ curl http://localhost:8787/api/speech/2025-11-10-柏林自由會議ai-的角色
 ### 測試單段落內容取得
 
 ```bash
-curl http://localhost:8787/api/section/628196
+curl http://localhost:8787/api/section/628198
 ```
 
 

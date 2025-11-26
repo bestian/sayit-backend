@@ -196,8 +196,8 @@ export default {
 			}
 
 			try {
-				// 從 D1 資料庫查詢所有 filename
-				const result = await env.DB.prepare('SELECT filename FROM speech_index ORDER BY id ASC').all();
+				// 從 D1 資料庫查詢所有 filename 和 display_name
+				const result = await env.DB.prepare('SELECT filename, display_name FROM speech_index ORDER BY id ASC').all();
 
 				if (!result.success) {
 					return new Response(JSON.stringify({ error: 'Database query failed' }), {
@@ -209,10 +209,13 @@ export default {
 					});
 				}
 
-				// 提取所有 filename 成為陣列
-				const filenames = result.results.map((row: any) => row.filename);
+				// 轉換為 Array of Objects 格式
+				const speechIndex = result.results.map((row: any) => ({
+					filename: row.filename,
+					display_name: row.display_name,
+				}));
 
-				return new Response(JSON.stringify(filenames, null, 2), {
+				return new Response(JSON.stringify(speechIndex, null, 2), {
 					status: 200,
 					headers: {
 						...corsHeaders,

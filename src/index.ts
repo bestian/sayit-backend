@@ -430,11 +430,9 @@ export default {
 			try {
 				const sectionId = parseInt(sectionIdMatch[1], 10);
 
-				// 從 D1 資料庫查詢所有符合 section_id 的資料
+				// 從 sections VIEW 查詢所有符合 section_id 的資料
 				// section_id 是 PRIMARY KEY，理論上只會有一筆資料
-				const result = await env.DB.prepare(
-					'SELECT filename, section_id, section_speaker, section_content, previous_section_id, next_section_id FROM speech_content WHERE section_id = ?'
-				)
+				const result = await env.DB.prepare('SELECT * FROM sections WHERE section_id = ?')
 					.bind(sectionId)
 					.all();
 
@@ -460,15 +458,8 @@ export default {
 				}
 
 				// 返回第一筆資料作為單一 Object（因為 section_id 是 PRIMARY KEY，應該只有一筆）
-				const section = result.results[0] as any;
-				const sectionData = {
-					filename: section.filename,
-					section_id: section.section_id,
-					section_speaker: section.section_speaker,
-					section_content: section.section_content,
-					previous_section_id: section.previous_section_id,
-					next_section_id: section.next_section_id,
-				};
+				// 返回所有 VIEW 中的欄位
+				const sectionData = result.results[0] as any;
 
 				return new Response(JSON.stringify(sectionData, null, 2), {
 					status: 200,

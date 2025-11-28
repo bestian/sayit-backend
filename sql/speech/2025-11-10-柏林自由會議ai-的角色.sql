@@ -1,6 +1,6 @@
 -- 自動生成的 SQL 插入語句
 -- 來源: raw_sample_data/2025-11-10-柏林自由會議ai-的角色.html
--- 生成時間: 2025-11-25T07:35:05.964Z
+-- 生成時間: 2025-11-28T00:43:51.252Z
 
 -- 使用 INSERT OR IGNORE 避免插入重複的 section_id（需要 PRIMARY KEY 約束）
 
@@ -51,3 +51,8 @@ INSERT OR IGNORE INTO speech_content (filename, section_id, previous_section_id,
 INSERT OR IGNORE INTO speech_content (filename, section_id, previous_section_id, next_section_id, section_speaker, section_content) VALUES ('2025-11-10-柏林自由會議ai-的角色', 628240, 628239, 628241, '%E5%94%90%E9%B3%B3-3', '<p>看見「用戶體驗」，我們將體驗人際。</p>');
 INSERT OR IGNORE INTO speech_content (filename, section_id, previous_section_id, next_section_id, section_speaker, section_content) VALUES ('2025-11-10-柏林自由會議ai-的角色', 628241, 628240, 628242, '%E5%94%90%E9%B3%B3-3', '<p>聽說「奇點即將接近」—— 多元宇宙，已經來臨。</p>');
 INSERT OR IGNORE INTO speech_content (filename, section_id, previous_section_id, next_section_id, section_speaker, section_content) VALUES ('2025-11-10-柏林自由會議ai-的角色', 628242, 628241, NULL, '%E5%94%90%E9%B3%B3-3', '<p>謝謝大家。</p>');
+
+-- 插入演講-講者關係到 speech_speakers 表
+-- 使用 INSERT OR IGNORE 避免插入重複的 (speech_filename, speaker_route_pathname) 組合
+
+INSERT OR IGNORE INTO speech_speakers (speech_filename, speaker_route_pathname) VALUES ('2025-11-10-柏林自由會議ai-的角色', '%E5%94%90%E9%B3%B3-3');

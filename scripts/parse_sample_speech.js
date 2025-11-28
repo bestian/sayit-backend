@@ -98,7 +98,18 @@ speechData.forEach((item, index) => {
   item.next_section_id = index < speechData.length - 1 ? speechData[index + 1].section_id : null;
 });
 
+// 收集所有唯一的 (speech_filename, speaker_route_pathname) 組合
+const speechSpeakersSet = new Set();
+speechData.forEach((item) => {
+  if (item.section_speaker) {
+    // 使用 "filename||||speaker" 作為唯一鍵（使用四個連續的 '|' 作為分隔符，避免檔名或講者名稱中的 '|' 造成問題）
+    const key = `${item.filename}||||${item.section_speaker}`;
+    speechSpeakersSet.add(key);
+  }
+});
+
 console.log(`成功解析 ${speechData.length} 筆資料`);
+console.log(`找到 ${speechSpeakersSet.size} 個唯一的演講-講者關係`);
 
 // 確保輸出目錄存在
 const jsonDir = path.dirname(outputJsonPath);
@@ -139,6 +150,22 @@ speechData.forEach((item) => {
 
   sqlStatements.push(
     `INSERT OR IGNORE INTO speech_content (filename, section_id, previous_section_id, next_section_id, section_speaker, section_content) VALUES ('${escapedFilename}', ${sectionId}, ${previousSectionId}, ${nextSectionId}, ${speakerValue}, ${contentValue});`
+  );
+});
+
+sqlStatements.push('');
+sqlStatements.push('-- 插入演講-講者關係到 speech_speakers 表');
+sqlStatements.push('-- 使用 INSERT OR IGNORE 避免插入重複的 (speech_filename, speaker_route_pathname) 組合');
+sqlStatements.push('');
+
+// 為每個唯一的演講-講者關係生成 INSERT 語句
+speechSpeakersSet.forEach((key) => {
+  const [speechFilename, speakerRoutePathname] = key.split('||||');
+  const escapedFilename = (speechFilename || '').replace(/'/g, "''");
+  const escapedSpeaker = (speakerRoutePathname || '').replace(/'/g, "''");
+
+  sqlStatements.push(
+    `INSERT OR IGNORE INTO speech_speakers (speech_filename, speaker_route_pathname) VALUES ('${escapedFilename}', '${escapedSpeaker}');`
   );
 });
 

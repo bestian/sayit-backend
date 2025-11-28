@@ -295,10 +295,12 @@ export default {
 			try {
 				const speakerRoutePathname = speakersRoutePathnameMatch[1];
 
-				// 從 D1 資料庫查詢指定 route_pathname 的講者
-				const result = await env.DB.prepare('SELECT * FROM speakers WHERE route_pathname = ?').bind(speakerRoutePathname).first();
+				// 從 speakers_view 查詢指定 route_pathname 的講者資訊
+				const speakerRow = await env.DB.prepare('SELECT * FROM speakers_view WHERE route_pathname = ?')
+					.bind(speakerRoutePathname)
+					.first();
 
-				if (!result) {
+				if (!speakerRow) {
 					return new Response(JSON.stringify({ error: 'Speaker not found' }), {
 						status: 404,
 						headers: {
@@ -308,37 +310,65 @@ export default {
 					});
 				}
 
-				// 解析 JSON 字串欄位
-				const speaker: any = {
-					id: result.id,
-					route_pathname: result.route_pathname,
-					name: result.name,
-					photoURL: result.photoURL,
-					appearances_count: result.appearances_count,
-					speeches_count: result.speeches_count,
+				// 從 speech_content 查詢該講者的所有段落，並 JOIN speech_index 取得 display_name
+				const sectionsResult = await env.DB.prepare(
+					`SELECT
+						sc.filename,
+						sc.section_id,
+						sc.previous_section_id,
+						sc.next_section_id,
+						sc.section_speaker,
+						sc.section_content,
+						si.display_name
+					FROM speech_content sc
+					LEFT JOIN speech_index si ON sc.filename = si.filename
+					WHERE sc.section_speaker = ?
+					ORDER BY sc.section_id ASC`
+				)
+					.bind(speakerRoutePathname)
+					.all();
+
+				if (!sectionsResult.success) {
+					return new Response(JSON.stringify({ error: 'Database query failed' }), {
+						status: 500,
+						headers: {
+							...corsHeaders,
+							'Content-Type': 'application/json',
+						},
+					});
+				}
+
+				const sections = sectionsResult.results.map((row: any) => ({
+					filename: row.filename,
+					display_name: row.display_name,
+					section_id: row.section_id,
+					previous_section_id: row.previous_section_id,
+					next_section_id: row.next_section_id,
+					section_speaker: row.section_speaker,
+					section_content: row.section_content,
+				}));
+
+				const longestSection =
+					speakerRow.longest_section_id
+						? {
+								section_id: speakerRow.longest_section_id,
+								section_content: speakerRow.longest_section_content || '',
+								section_filename: speakerRow.longest_section_filename || '',
+								section_display_name: speakerRow.longest_section_displayname || '',
+						  }
+						: null;
+
+				const speaker = {
+					id: speakerRow.id,
+					route_pathname: speakerRow.route_pathname,
+					name: speakerRow.name,
+					photoURL: speakerRow.photoURL,
+					appearances_count: speakerRow.appearances_count ?? 0,
+					sections_count:
+						(typeof speakerRow.sections_count === 'number' ? speakerRow.sections_count : null) ?? sections.length,
+					sections,
+					longest_section: longestSection,
 				};
-
-				// 解析 speeches JSON 字串
-				if (result.speeches) {
-					try {
-						speaker.speeches = JSON.parse(result.speeches as string);
-					} catch (e) {
-						speaker.speeches = [];
-					}
-				} else {
-					speaker.speeches = [];
-				}
-
-				// 解析 longest_speech JSON 字串
-				if (result.longest_speech) {
-					try {
-						speaker.longest_speech = JSON.parse(result.longest_speech as string);
-					} catch (e) {
-						speaker.longest_speech = null;
-					}
-				} else {
-					speaker.longest_speech = null;
-				}
 
 				return new Response(JSON.stringify(speaker, null, 2), {
 					status: 200,

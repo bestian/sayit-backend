@@ -19,6 +19,7 @@ SELECT
         WHERE sc.section_speaker = s.route_pathname
     ), 0) AS sections_count,
     -- longest_section 相關欄位：從 speech_content 找最長的 section_content
+    longest_section.section_id AS longest_section_id,
     longest_section.section_content AS longest_section_content,
     longest_section.filename AS longest_section_filename,
     longest_section.display_name AS longest_section_displayname
@@ -28,6 +29,7 @@ FROM
     LEFT JOIN (
         SELECT
             sc.section_speaker,
+            sc.section_id,
             sc.section_content,
             sc.filename,
             si.display_name

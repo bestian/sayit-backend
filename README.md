@@ -129,6 +129,14 @@ GET /api/an/2025-11-10-柏林自由會議ai-的角色.an
 
 ## 路由測試
 
+
+### 測試拿單一講者的所有細節
+
+```bash
+curl http://localhost:8787/api/speaker_detail/%E5%94%90%E9%B3%B3-3.json
+```
+
+
 ### 測試拿單筆演講的所有內容
 
 ```bash

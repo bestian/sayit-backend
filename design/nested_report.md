@@ -166,7 +166,7 @@
 ```html
 <ul class="section-list">
   <li id="s6878" class="speech speech--border">
-    <!-- 有完整的 id 和內容 -->
+    <!-- 有完整的 id 和內容，內容包在<div class="speech__content"></div>中 -->
   </li>
 </ul>
 ```

@@ -188,10 +188,27 @@ speechIndex.forEach((item, index) => {
 
     if (anySectionIdNull) {
       console.warn(`  警告: 有 section_id 是 null，將此檔案視為例外，不生成 JSON 和 SQL`);
+
+      // 嘗試從索引頁（即目前讀取的 {filename}.html）抓取巢狀檔案資訊
+      const nestedFilenames = [];
+      const nestedDisplayNames = [];
+      $sectionList.find('span.section-title a').each((_, anchor) => {
+        const $a = $(anchor);
+        const href = $a.attr('href') || '';
+        const parts = href.split('/');
+        const tail = parts[parts.length - 1] || '';
+        const nestedFilename = decodeURIComponent(tail);
+        const nestedDisplayName = $a.text().trim();
+        if (nestedFilename) nestedFilenames.push(nestedFilename);
+        if (nestedDisplayName) nestedDisplayNames.push(nestedDisplayName);
+      });
+
       exceptionFiles.push({
         filename: filename,
         reason: '有 section_id 是 null',
-        sections_count: speechData.length
+        sections_count: speechData.length,
+        nest_filenames: nestedFilenames.join(','),
+        nest_display_names: nestedDisplayNames.join(',')
       });
       errorCount++;
       return; // 跳過後續處理

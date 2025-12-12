@@ -1,6 +1,6 @@
 -- 自動生成的 SQL 插入語句
--- 來源: raw_sample_data/2025-11-10-柏林自由會議ai-的角色.html
--- 生成時間: 2025-11-28T00:43:51.252Z
+-- 來源: /Users/bestian/sayit-archive-static/sayit.archive.tw/2025-11-10-柏林自由會議ai-的角色.html
+-- 生成時間: 2025-12-12T01:28:19.089Z
 
 -- 使用 INSERT OR IGNORE 避免插入重複的 section_id（需要 PRIMARY KEY 約束）
 
@@ -21,7 +21,7 @@ INSERT OR IGNORE INTO speech_content (filename, section_id, previous_section_id,
 INSERT OR IGNORE INTO speech_content (filename, section_id, previous_section_id, next_section_id, section_speaker, section_content) VALUES ('2025-11-10-柏林自由會議ai-的角色', 628210, 628209, 628211, '%E5%94%90%E9%B3%B3-3', '<p>現在，人們談論「人在迴圈中」（human in the loop）。但 AI 迴圈中的人就像倉鼠滾輪裡的倉鼠。也許感覺運動得很棒，但根本沒有在掌舵。我們需要將 AI 納入人本迴圈（AI in the loop of humanity）。</p>');
 INSERT OR IGNORE INTO speech_content (filename, section_id, previous_section_id, next_section_id, section_speaker, section_content) VALUES ('2025-11-10-柏林自由會議ai-的角色', 628211, 628210, 628212, '%E5%94%90%E9%B3%B3-3', '<p>這具體意味著什麼？這意味著我們共同掌握方向盤。我們利用 AI 作為輔助式智慧，幫助尋找交集，將衝突轉化——不是像火山爆發那樣的能量，而是將岩漿轉化為地熱能。為了實現強大的共同創造，我們可以將關係健全度最大化。一旦我們共同實現了這一點，我們就能攜手共創無限未來。</p>');
 INSERT OR IGNORE INTO speech_content (filename, section_id, previous_section_id, next_section_id, section_speaker, section_content) VALUES ('2025-11-10-柏林自由會議ai-的角色', 628212, 628211, 628213, NULL, '<p><i>（從憤怒到交集）</i></p>');
-INSERT OR IGNORE INTO speech_content (filename, section_id, previous_section_id, next_section_id, section_speaker, section_content) VALUES ('2025-11-10-柏林自由會議ai-的角色', 628213, 628212, 628214, '%E5%94%90%E9%B3%B3-3', '<p>這就是我們在臺灣具體所做的。在臺灣，我們深知壓力。壓力造就鑽石。根據 V-Dem 的數據，過去 12 年來，我們一直是全球極化攻擊的頭號目標。但我們適應了。我們學會用「利社會架構」取代反社會的媒體動態。我們知道，「引用嘲諷」或「抨擊」（dunk）是極化的根源。因此，我們建立的系統讓人無法抨擊任何人。相反地，我們只讓那些並非極端、而是在左右兩派之間搭橋的言論廣為流傳。這就是我們所說的「罕見共識」（uncommon ground），這是臺灣模式的核心。</p>');
+INSERT OR IGNORE INTO speech_content (filename, section_id, previous_section_id, next_section_id, section_speaker, section_content) VALUES ('2025-11-10-柏林自由會議ai-的角色', 628213, 628212, 628214, '%E5%94%90%E9%B3%B3-3', '<p>這就是我們在臺灣具體所做的。在臺灣，我們深知壓力。壓力造就鑽石。根據 V-Dem 的數據，過去 12 年來，我們一直是全球極化攻擊的頭號目標。但我們適應了。我們學會用「利社會架構」取代反社會的媒體動態。我們知道，「引用嘲諷」或「酸」（dunk）是極化的根源。因此，我們建立的系統讓人無法酸任何人。相反地，我們只讓那些並非極端、而是在左右兩派之間搭橋的言論廣為流傳。這就是我們所說的「罕見共識」（uncommon ground），這是臺灣模式的核心。</p>');
 INSERT OR IGNORE INTO speech_content (filename, section_id, previous_section_id, next_section_id, section_speaker, section_content) VALUES ('2025-11-10-柏林自由會議ai-的角色', 628214, 628213, 628215, '%E5%94%90%E9%B3%B3-3', '<p>十年前，當共享乘車服務 Uber 進入臺灣時，引發了社會各界的激烈衝突。但我們使用了 Polis 這個橋接系統，來描繪人們實際達成共識的地方，就像一張團體自拍。僅僅三週，我們就將衝突轉化為每個人都能接受的政策選項。不是左翼，不是右翼，而是「上翼共識」（up-wing consensus）。如今，這種演算法已在全球範圍內被廣泛用作「社群備註」（Community Notes）。</p>');
 INSERT OR IGNORE INTO speech_content (filename, section_id, previous_section_id, next_section_id, section_speaker, section_content) VALUES ('2025-11-10-柏林自由會議ai-的角色', 628215, 628214, 628216, '%E5%94%90%E9%B3%B3-3', '<p>去年，當我們面臨來自網路深偽詐騙的新威脅時，許多人看到了臺裔 NVIDIA 執行長黃仁勳的臉。如果你點擊進去，黃仁勳會想送你免費的加密貨幣或提供一些投資建議。當然，那不是黃仁勳本人，那是運行在 NVIDIA GPU 上的他的深偽影像。</p>');
 INSERT OR IGNORE INTO speech_content (filename, section_id, previous_section_id, next_section_id, section_speaker, section_content) VALUES ('2025-11-10-柏林自由會議ai-的角色', 628216, 628215, 628217, '%E5%94%90%E9%B3%B3-3', '<p>然而，如果你單獨詢問臺灣民眾，他們都會說：「喔，政府應該遠離網路審查」，畢竟，正如我們的總統蔡博士所言，在網路自由方面，我們是全亞洲最自由的。那麼該怎麼辦？</p>');

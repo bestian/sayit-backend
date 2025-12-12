@@ -1,3 +1,7 @@
+# parsed output
+data/speech/
+sql/speech/
+
 # Logs
 
 logs

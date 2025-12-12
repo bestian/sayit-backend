@@ -6,8 +6,30 @@ const cheerio = require('cheerio');
 const inputHtmlPath = path.join(__dirname, '..', 'raw_sample_data', 'speeches.html');
 const outputJsonPath = path.join(__dirname, '..', 'data', 'speech_index.json');
 const outputSqlPath = path.join(__dirname, '..', 'sql', 'fill-speech_index.sql');
+const exceptionPath = path.join(__dirname, '..', 'data', 'exception.json');
 
 console.log('讀取 HTML 文件:', inputHtmlPath);
+
+// 讀取例外清單，建立 map 方便查詢
+let exceptionMap = new Map();
+if (fs.existsSync(exceptionPath)) {
+  try {
+    const exceptionData = JSON.parse(fs.readFileSync(exceptionPath, 'utf8'));
+    exceptionData.forEach((item) => {
+      if (item.filename) {
+        exceptionMap.set(item.filename, {
+          nest_filenames: item.nest_filenames || '',
+          nest_display_names: item.nest_display_names || '',
+        });
+      }
+    });
+    console.log(`載入例外清單: ${exceptionMap.size} 筆`);
+  } catch (err) {
+    console.warn('警告: 讀取 exception.json 失敗，將不使用例外資訊', err.message);
+  }
+} else {
+  console.log('未找到 exception.json，將不使用例外資訊');
+}
 
 // 讀取 HTML 文件
 const htmlContent = fs.readFileSync(inputHtmlPath, 'utf8');
@@ -52,7 +74,10 @@ $listItems.each((index, liElement) => {
   // 建立物件
   const speechItem = {
     filename: decodeURIComponent(filename),
-    display_name: displayName
+    display_name: displayName,
+    isNested: exceptionMap.has(decodeURIComponent(filename)),
+    nest_filenames: exceptionMap.get(decodeURIComponent(filename))?.nest_filenames || '',
+    nest_display_names: exceptionMap.get(decodeURIComponent(filename))?.nest_display_names || ''
   };
 
   speechIndexData.push(speechItem);
@@ -89,10 +114,13 @@ speechIndexData.forEach((item) => {
   // 轉義單引號（SQL 字符串中的單引號需要轉義為兩個單引號）
   const escapedFilename = (item.filename || '').replace(/'/g, "''");
   const escapedDisplayName = (item.display_name || '').replace(/'/g, "''");
+  const escapedNestFilenames = (item.nest_filenames || '').replace(/'/g, "''");
+  const escapedNestDisplayNames = (item.nest_display_names || '').replace(/'/g, "''");
+  const isNestedValue = item.isNested ? 1 : 0;
 
   // 使用 INSERT OR IGNORE 來避免插入重複的 filename
   sqlStatements.push(
-    `INSERT OR IGNORE INTO speech_index (filename, display_name) VALUES ('${escapedFilename}', '${escapedDisplayName}');`
+    `INSERT OR IGNORE INTO speech_index (filename, display_name, isNested, nest_filenames, nest_display_names) VALUES ('${escapedFilename}', '${escapedDisplayName}', ${isNestedValue}, '${escapedNestFilenames}', '${escapedNestDisplayNames}');`
   );
 });
 

@@ -1,6 +1,7 @@
 # parsed output
 data/speech/
 sql/speech/
+sql/fill-all-speech_content.sql
 
 # Logs
 

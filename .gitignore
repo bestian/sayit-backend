@@ -1,6 +1,8 @@
 # parsed output
 data/speech/
+!data/speech/1999年全國司法改革會議.json
 sql/speech/
+!sql/speech/1999年全國司法改革會議.sql
 sql/fill-all-speech_content.sql
 
 # Logs

@@ -156,6 +156,8 @@ speechIndex.forEach((item, index) => {
       // 建立物件
       const speechItem = {
         filename: filename,
+        nest_filename: null,
+        nest_display_name: null,
         section_id: sectionId ? parseInt(sectionId, 10) : null,
         section_speaker: sectionSpeaker,
         section_content: sectionContent
@@ -242,7 +244,7 @@ speechIndex.forEach((item, index) => {
       const speakerValue = item.section_speaker ? `'${escapedSpeaker}'` : 'NULL';
       const contentValue = item.section_content ? `'${escapedContent}'` : 'NULL';
 
-      const sqlLine = `INSERT OR IGNORE INTO speech_content (filename, section_id, previous_section_id, next_section_id, section_speaker, section_content) VALUES ('${escapedFilename}', ${sectionId}, ${previousSectionId}, ${nextSectionId}, ${speakerValue}, ${contentValue});`;
+      const sqlLine = `INSERT OR IGNORE INTO speech_content (filename, nest_filename, nest_display_name, section_id, previous_section_id, next_section_id, section_speaker, section_content) VALUES ('${escapedFilename}', NULL, NULL, ${sectionId}, ${previousSectionId}, ${nextSectionId}, ${speakerValue}, ${contentValue});`;
       sqlStatements.push(sqlLine);
       allSqlStatements.push(sqlLine);
     });

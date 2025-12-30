@@ -84,6 +84,8 @@ $listItems.each((index, liElement) => {
   // 建立物件
   const speechItem = {
     filename: filename,
+    nest_filename: null,
+    nest_display_name: null,
     section_id: sectionId ? parseInt(sectionId, 10) : null,
     section_speaker: sectionSpeaker,
     section_content: sectionContent
@@ -149,7 +151,7 @@ speechData.forEach((item) => {
   const contentValue = item.section_content ? `'${escapedContent}'` : 'NULL';
 
   sqlStatements.push(
-    `INSERT OR IGNORE INTO speech_content (filename, section_id, previous_section_id, next_section_id, section_speaker, section_content) VALUES ('${escapedFilename}', ${sectionId}, ${previousSectionId}, ${nextSectionId}, ${speakerValue}, ${contentValue});`
+    `INSERT OR IGNORE INTO speech_content (filename, nest_filename, nest_display_name, section_id, previous_section_id, next_section_id, section_speaker, section_content) VALUES ('${escapedFilename}', NULL, NULL, ${sectionId}, ${previousSectionId}, ${nextSectionId}, ${speakerValue}, ${contentValue});`
   );
 });
 

@@ -22,6 +22,8 @@ SELECT
     longest_section.section_id AS longest_section_id,
     longest_section.section_content AS longest_section_content,
     longest_section.filename AS longest_section_filename,
+    longest_section.nest_filename AS longest_section_nest_filename,
+    longest_section.nest_display_name AS longest_section_nest_display_name,
     longest_section.display_name AS longest_section_displayname
 FROM
     speakers s
@@ -32,6 +34,8 @@ FROM
             sc.section_id,
             sc.section_content,
             sc.filename,
+            sc.nest_filename,
+            sc.nest_display_name,
             si.display_name
         FROM
             speech_content sc

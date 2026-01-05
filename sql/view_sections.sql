@@ -3,6 +3,8 @@ DROP VIEW IF EXISTS sections;
 CREATE VIEW sections AS
 SELECT
     a.filename,
+    a.nest_filename,
+    a.nest_display_name,
     a.section_id,
     a.previous_section_id,
     a.next_section_id,

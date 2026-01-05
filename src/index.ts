@@ -314,6 +314,8 @@ export default {
 				const sectionsResult = await env.DB.prepare(
 					`SELECT
 						sc.filename,
+						sc.nest_filename,
+						sc.nest_display_name,
 						sc.section_id,
 						sc.previous_section_id,
 						sc.next_section_id,
@@ -340,6 +342,8 @@ export default {
 
 				const sections = sectionsResult.results.map((row: any) => ({
 					filename: row.filename,
+					nest_filename: row.nest_filename ?? null,
+					nest_display_name: row.nest_display_name ?? null,
 					display_name: row.display_name,
 					section_id: row.section_id,
 					previous_section_id: row.previous_section_id,
@@ -354,6 +358,8 @@ export default {
 								section_id: speakerRow.longest_section_id,
 								section_content: speakerRow.longest_section_content || '',
 								section_filename: speakerRow.longest_section_filename || '',
+								section_nest_filename: speakerRow.longest_section_nest_filename ?? null,
+								section_nest_display_name: speakerRow.longest_section_nest_display_name ?? null,
 								section_display_name: speakerRow.longest_section_displayname || '',
 						  }
 						: null;
@@ -406,7 +412,7 @@ export default {
 				// 從 sections 視圖查詢所有符合 filename 的演講內容
 				// 使用 section_id 排序以保持原始順序
 				const result = await env.DB.prepare(
-					'SELECT filename, section_id, previous_section_id, next_section_id, section_speaker, section_content, display_name, photoURL, name FROM sections WHERE filename = ? ORDER BY section_id ASC'
+					'SELECT filename, nest_filename, nest_display_name, section_id, previous_section_id, next_section_id, section_speaker, section_content, display_name, photoURL, name FROM sections WHERE filename = ? ORDER BY section_id ASC'
 				)
 					.bind(filename)
 					.all();
@@ -424,6 +430,8 @@ export default {
 				// 轉換為 Array of Objects 格式
 				const speechContent = result.results.map((row: any) => ({
 					filename: row.filename,
+					nest_filename: row.nest_filename ?? null,
+					nest_display_name: row.nest_display_name ?? null,
 					section_id: row.section_id,
 					previous_section_id: row.previous_section_id,
 					next_section_id: row.next_section_id,

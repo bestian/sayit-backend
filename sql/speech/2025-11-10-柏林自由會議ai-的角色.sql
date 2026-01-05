@@ -1,6 +1,6 @@
 -- 自動生成的 SQL 插入語句
--- 來源: raw_sample_data/2025-11-10-柏林自由會議ai-的角色.html
--- 生成時間: 2025-12-30T04:37:47.375Z
+-- 來源: /Users/bestian/sayit-archive-static/sayit.archive.tw/2025-11-10-柏林自由會議ai-的角色.html
+-- 生成時間: 2026-01-05T22:45:49.219Z
 
 -- 使用 INSERT OR IGNORE 避免插入重複的 section_id（需要 PRIMARY KEY 約束）
 

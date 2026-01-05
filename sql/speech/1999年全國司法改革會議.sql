@@ -1,6 +1,6 @@
 -- 自動生成的 SQL 插入語句（巢狀資料）
--- 母檔: /Users/bestian/Documents/GitHub/sayit-backend/raw_sample_data/1999年全國司法改革會議.html
--- 生成時間: 2025-12-30T04:20:04.614Z
+-- 母檔: /Users/bestian/sayit-archive-static/sayit.archive.tw/1999年全國司法改革會議.html
+-- 生成時間: 2026-01-05T22:47:11.613Z
 
 -- 使用 INSERT OR IGNORE 避免重複
 
